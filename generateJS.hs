@@ -96,7 +96,7 @@ identifier = identifierName `butNot` reservedWord
 
 identifierName = Nonterminal [[identifierStart], 
                               [identifierName, identifierPart]]
-identifierStart = oneOf [oneOf ["_", "$"], unicodeLetter, unicodeEscape]
+identifierStart = oneOf [oneOf ["_", "$"], unicodeLetter]
 identifierPart = oneOf [identifierStart, unicodeDigit, unicodeEscape]
                               -- ++ [unicodeCombinindMark, unicodeConnectorPunctuation]
 
