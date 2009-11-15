@@ -6,6 +6,7 @@ import qualified Data.Set as Set
 import Prelude hiding (catch)
 import System.Directory
 import System
+import Text.Printf
 
 data Symbol
     = Terminal String
@@ -487,16 +488,24 @@ filesPerDirectory :: Int
 filesPerDirectory = 20000
 
 splitInto :: Int -> [a] -> [[a]]
+splitInto _ [] = []
 splitInto k l = h:(splitInto k t)
         where (h,t) = splitAt k l
 
-main = do [n] <- getArgs
+
+readArgs [s] = read s
+readArgs _   = toEnum filesPerDirectory
+
+main = do args <- getArgs
           mkcd "gen"
-          mapM_ handleGroup $ take (ceiling $ (read n) / toEnum filesPerDirectory) $ zip [1..] $ splitInto filesPerDirectory $ zip [1..] $ getAll $ program
+          mapM_ handleGroup $ zip [1..] $ splitInto filesPerDirectory $ zip [1..] $ take (readArgs args) $ getAll $ program
+          
 
+format :: Int -> String
+format n = printf "%08d" n
 
-handleGroup (n,ps) = do mkcd $ show n
+handleGroup (n,ps) = do mkcd $ format n
                         mapM_ writeProgramToFile $ ps
                         setCurrentDirectory ".."
 
-writeProgramToFile (n, p) = writeFile (show n ++ ".js") p
+writeProgramToFile (n, p) = writeFile (format n ++ ".js") p
