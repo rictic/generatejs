@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -fglasgow-exts #-}
 module Main
   where
-import Omega
+import Control.Monad.Omega
 import qualified Data.Set as Set
 import Prelude hiding (catch)
 
