@@ -4,6 +4,8 @@ module Main
 import Control.Monad.Omega
 import qualified Data.Set as Set
 import Prelude hiding (catch)
+import System.Directory
+import System
 
 data Symbol
     = Terminal String
@@ -52,6 +54,7 @@ butNot s n = oneOf (filter (\c -> not $ Set.member c set) (getAll s))
 --Syntax:
 
 
+--todo: figure out the subset of unicode that's widely supported and stick to that
 sourceCharacter = oneOf $ ['a'..'z']
 
 
@@ -472,4 +475,28 @@ sourceElement = oneOf [statement, functionDeclaration]
 
 
 
-main = mapM_ putStrLn $ take 100000 $ getAll $ program
+
+
+
+--Executing the generator
+
+mkcd dirname = do createDirectoryIfMissing False dirname
+                  setCurrentDirectory dirname
+
+filesPerDirectory :: Int
+filesPerDirectory = 20000
+
+splitInto :: Int -> [a] -> [[a]]
+splitInto k l = h:(splitInto k t)
+        where (h,t) = splitAt k l
+
+main = do [n] <- getArgs
+          mkcd "gen"
+          mapM_ handleGroup $ take (ceiling $ (read n) / toEnum filesPerDirectory) $ zip [1..] $ splitInto filesPerDirectory $ zip [1..] $ getAll $ program
+
+
+handleGroup (n,ps) = do mkcd $ show n
+                        mapM_ writeProgramToFile $ ps
+                        setCurrentDirectory ".."
+
+writeProgramToFile (n, p) = writeFile (show n ++ ".js") p
