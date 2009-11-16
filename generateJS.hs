@@ -1,3 +1,24 @@
+{-
+Javascript Generator
+
+
+Generates varied syntactically valid javascript according to the ECMA-262
+specification: http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf
+
+The code is structured to be very clearly analogous to the productions therein,
+with as few deviations as possible.  The major deviations you will notice arise
+when unicode is called for.  In the future it would be worthwhile to determine
+what unicode productions are safe in modern js engines.
+
+
+
+requires Control.Monad.Omega.  
+`cabal install control-monad-omega` should fetch and install it.
+
+ghc --make generateJS.hs -o generatejs -O2 && ./generatejs
+
+-}
+
 {-# OPTIONS_GHC -fglasgow-exts #-}
 module Main
   where
@@ -52,7 +73,9 @@ butNot :: SymbolLike a => Symbol -> a -> Symbol
 butNot s n = oneOf (filter (\c -> not $ Set.member c set) (getAll s))
     where set = Set.fromList $ getAll $ toSymbol n
 
---Syntax:
+
+--Generation code:
+
 
 
 --todo: figure out the subset of unicode that's widely supported and stick to that
