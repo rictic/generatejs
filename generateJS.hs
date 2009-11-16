@@ -27,17 +27,26 @@ splitInto k l = h:(splitInto k t)
         where (h,t) = splitAt k l
 
 
-readArgs [s] = read s
-readArgs _   = toEnum filesPerDirectory
+readArgs :: [String] -> Maybe (Bool, Int)
+readArgs ["--stdout", s] = Just (True, read s)
+readArgs [s] = Just (False, read s)
+readArgs _   = Nothing
 
 main = do args <- getArgs
-          case args of
-            [arg]     -> generatePrograms (read arg)
-            otherwise -> usage
-generatePrograms n = do mkcd "gen"
-                        mapM_ handleGroup $ zip [1..] $ splitInto filesPerDirectory $ zip [1..] $ take n $ getAll $ program
+          case readArgs args of
+            Just (False, num) -> generatePrograms num
+            Just (True,  num) -> printPrograms num
+            Nothing -> usage
 
-usage = do putStrLn "Usage: generatejs <number of js programs to generate>"
+allJSPrograms = getAll program
+
+printPrograms n = mapM_ putStrLn $ take n allJSPrograms
+
+generatePrograms n = do mkcd "gen"
+                        mapM_ handleGroup $ zip [1..] $ splitInto filesPerDirectory $ zip [1..] $ take n allJSPrograms
+
+
+usage = do putStrLn "Usage: generatejs [--stdout] <number of js programs to generate>"
            putStrLn "  -- output is put into ./gen"
 
 format :: Int -> String
