@@ -3,16 +3,17 @@ Javascript Generator
 
 A program for generating widely varied, syntactically valid, Javascript source code conforming to the ECMA-262 Standard.
 
+Requires Haskell, easily installed from here: http://hackage.haskell.org/platform/ 
 
 Getting the Code
 ----------------
 
-The latest version of the code can always be gotten from github, either by clone it with git:
+The latest version of the code can always be gotten from github, either by cloning it with git:
 
     git clone git://github.com/rictic/generatejs.git
     cd generatejs
     
-Or by downloading at tarball:
+Or by downloading a tarball:
 
     curl -L http://github.com/rictic/generatejs/tarball/master > generatejs.tar.gz
     tar -xzf generatejs.tar.gz
