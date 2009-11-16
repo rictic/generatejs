@@ -12,7 +12,7 @@ what unicode productions are safe in modern js engines.
 
 
 
-requires Control.Monad.Omega.  
+requires Control.Monad.Omega
 `cabal install control-monad-omega` should fetch and install it.
 
 ghc --make generateJS.hs -o generatejs -O2 && ./generatejs
@@ -29,53 +29,8 @@ import System.Directory
 import System
 import Text.Printf
 
-data Symbol
-    = Terminal String
-    | Nonterminal [[Symbol]] -- a disjunction of juxtapositions
-    | NotImplemented --todo: remove when everything is implemented
-
-class SymbolLike a where
-    toSymbol :: a -> Symbol
-instance SymbolLike Symbol where
-    toSymbol = id
-instance SymbolLike String where
-    toSymbol = Terminal
-instance SymbolLike Char where
-    toSymbol c = Terminal [c]
-
---Take a Symbol and enumerate every expansion of it
-getAll s = map concat $ runOmega $ enumerate s
-
-oneOf :: SymbolLike a => [a] -> Symbol
-oneOf ts = Nonterminal $ map (\f -> [toSymbol f]) ts
-
-many1 :: Symbol -> Symbol
-many1 s = n
-    where n = Nonterminal [[s], [n,s]]
-
-many s = m
-    where m = Nonterminal [[], [m,s]]
-
-optional s = Nonterminal [[], [s]]
-
-enumerate :: Symbol -> Omega [String]
-enumerate (NotImplemented) = return []
-enumerate (Terminal a) = return [a]
-enumerate (Nonterminal alts) = do
-    alt <- each alts          -- for each alternative
-      -- (each is the Omega constructor :: [a] -> Omega a)
-    rep <- mapM enumerate alt -- enumerate each symbol in the sequence
-    return $ concat rep       -- and concatenate the results
-
---Returns the symbol given by removing every element
---from the set from the symbol
-butNot :: SymbolLike a => Symbol -> a -> Symbol
-butNot s n = oneOf (filter (\c -> not $ Set.member c set) (getAll s))
-    where set = Set.fromList $ getAll $ toSymbol n
-
 
 --Generation code:
-
 
 
 --todo: figure out the subset of unicode that's widely supported and stick to that
@@ -532,3 +487,50 @@ handleGroup (n,ps) = do mkcd $ format n
                         setCurrentDirectory ".."
 
 writeProgramToFile (n, p) = writeFile (format n ++ ".js") p
+
+
+
+
+----The guts of the implementation
+
+data Symbol
+    = Terminal String
+    | Nonterminal [[Symbol]] -- a disjunction of juxtapositions
+
+class SymbolLike a where
+    toSymbol :: a -> Symbol
+instance SymbolLike Symbol where
+    toSymbol = id
+instance SymbolLike String where
+    toSymbol = Terminal
+instance SymbolLike Char where
+    toSymbol c = Terminal [c]
+
+--Take a Symbol and enumerate every expansion of it
+getAll s = map concat $ runOmega $ enumerate s
+
+oneOf :: SymbolLike a => [a] -> Symbol
+oneOf ts = Nonterminal $ map (\f -> [toSymbol f]) ts
+
+many1 :: Symbol -> Symbol
+many1 s = n
+    where n = Nonterminal [[s], [n,s]]
+
+many s = m
+    where m = Nonterminal [[], [m,s]]
+
+optional s = Nonterminal [[], [s]]
+
+enumerate :: Symbol -> Omega [String]
+enumerate (Terminal a) = return [a]
+enumerate (Nonterminal alts) = do
+    alt <- each alts          -- for each alternative
+      -- (each is the Omega constructor :: [a] -> Omega a)
+    rep <- mapM enumerate alt -- enumerate each symbol in the sequence
+    return $ concat rep       -- and concatenate the results
+
+--Returns the symbol given by removing every element
+--from the set from the symbol
+butNot :: SymbolLike a => Symbol -> a -> Symbol
+butNot s n = oneOf (filter (\c -> not $ Set.member c set) (getAll s))
+    where set = Set.fromList $ getAll $ toSymbol n
