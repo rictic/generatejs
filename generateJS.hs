@@ -31,9 +31,14 @@ readArgs [s] = read s
 readArgs _   = toEnum filesPerDirectory
 
 main = do args <- getArgs
-          mkcd "gen"
-          mapM_ handleGroup $ zip [1..] $ splitInto filesPerDirectory $ zip [1..] $ take (readArgs args) $ getAll $ program
-          
+          case args of
+            [arg]     -> generatePrograms (read arg)
+            otherwise -> usage
+generatePrograms n = do mkcd "gen"
+                        mapM_ handleGroup $ zip [1..] $ splitInto filesPerDirectory $ zip [1..] $ take n $ getAll $ program
+
+usage = do putStrLn "Usage: generatejs <number of js programs to generate>"
+           putStrLn "  -- output is put into ./gen"
 
 format :: Int -> String
 format n = printf "%08d" n
