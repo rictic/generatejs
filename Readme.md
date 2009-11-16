@@ -3,7 +3,7 @@ Javascript Generator
 
 A program for generating widely varied, syntactically valid Javascript source code conforming to the ECMA-262 Standard.
 
-Requires Haskell, easily installed from here: http://hackage.haskell.org/platform/ 
+Requires Haskell, easily installed at [The Haskell Platform](http://hackage.haskell.org/platform/)
 
 Getting the Code
 ----------------
