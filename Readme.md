@@ -1,7 +1,7 @@
 Javascript Generator
 ====================
 
-A program for generating widely varied, syntactically valid, Javascript source code conforming to the ECMA-262 Standard.
+A program for generating widely varied, syntactically valid Javascript source code conforming to the ECMA-262 Standard.
 
 Requires Haskell, easily installed from here: http://hackage.haskell.org/platform/ 
 
@@ -32,3 +32,27 @@ Running
     generatejs <number-of-programs-to-create
 
 This will create a directory gen/ in your current directory.  This directory will in turn be filled with numbered subdirectories, each of which holds up to 20000 numbered js programs.  This is done to keep the filesystem from freaking out from too many files in any one directory.
+
+
+Hacking
+-------
+
+The command line runner is in generateJS.hs, the actual generation code is in jsgenerator.js.
+
+The code is written in a declarative style, with a pretty direct mapping from the productions in the standard to Symbols in the code.
+
+i.e. the production
+
+    SignedInteger ::: 
+        DecimalDigits
+        + DecimalDigits
+        - DecimalDigits
+
+becomes
+
+    signedInteger = Nonterminal [
+        [decimalDigits],
+        [Terminal "+", decimalDigits],
+        [Terminal "-", decimalDigits]]
+
+I found it helpful to construct a few `Symbol`s with `Terminal` and `Nonterminal` and pass the result to `getAll` until I was sure I had it worked out.
