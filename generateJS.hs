@@ -23,7 +23,7 @@ filesPerDirectory = 20000
 
 splitInto :: Int -> [a] -> [[a]]
 splitInto _ [] = []
-splitInto k l = h:(splitInto k t)
+splitInto k l = h:splitInto k t
         where (h,t) = splitAt k l
 
 
@@ -50,14 +50,10 @@ usage = do putStrLn "Usage: generatejs [--stdout] <number of js programs to gene
            putStrLn "  -- output is put into ./gen"
 
 format :: Int -> String
-format n = printf "%08d" n
+format = printf "%08d"
 
 handleGroup (n,ps) = do mkcd $ format n
-                        mapM_ writeProgramToFile $ ps
+                        mapM_ writeProgramToFile ps
                         setCurrentDirectory ".."
 
 writeProgramToFile (n, p) = writeFile (format n ++ ".js") p
-
-
-
-

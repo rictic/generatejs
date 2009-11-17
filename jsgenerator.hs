@@ -121,9 +121,9 @@ hexIntegerLiteral = Nonterminal [[Terminal "0x", hexDigit],
 stringLiteral = Nonterminal [[Terminal "\"", many doubleStringCharacter, Terminal "\""],
                              [Terminal "'" , many singleStringCharacter, Terminal "'" ]]
 
-doubleStringCharacter = Nonterminal [[sourceCharacter `butNot` (oneOf [Terminal "\"", Terminal "\\", lineTerminator])],
+doubleStringCharacter = Nonterminal [[sourceCharacter `butNot` oneOf [Terminal "\"", Terminal "\\", lineTerminator]],
                                      [Terminal "\\", escapeSequence]]
-singleStringCharacter = Nonterminal [[sourceCharacter `butNot` (oneOf [Terminal "\'", Terminal "\\", lineTerminator])],
+singleStringCharacter = Nonterminal [[sourceCharacter `butNot` oneOf [Terminal "\'", Terminal "\\", lineTerminator]],
                                      [Terminal "\\", escapeSequence]]
 
 escapeSequence = oneOf [characterEscapeSequence, hexEscapeSequence, unicodeEscapeSequence]
@@ -131,7 +131,7 @@ escapeSequence = oneOf [characterEscapeSequence, hexEscapeSequence, unicodeEscap
 
 characterEscapeSequence = oneOf [singleEscapeCharacter, nonEscapeCharacter]
 singleEscapeCharacter = oneOf ["'", "\"", "\\", "b", "f", "n", "r", "t", "v"]
-nonEscapeCharacter = sourceCharacter `butNot` (oneOf [escapeCharacter, lineTerminator])
+nonEscapeCharacter = sourceCharacter `butNot` oneOf [escapeCharacter, lineTerminator]
 escapeCharacter = oneOf [singleEscapeCharacter, decimalDigit, Terminal "x", Terminal "u"] --not specified, but this seems right
 hexEscapeSequence = Nonterminal [[Terminal "x", hexDigit, hexDigit]]
 
@@ -140,9 +140,9 @@ unicodeEscapeSequence = Nonterminal [[Terminal "u", hexDigit, hexDigit, hexDigit
 regularExpressionLiteral = Nonterminal [[Terminal "/", regularExpressionBody, Terminal "/", regularExpressionFlags]]
 regularExpressionBody = Nonterminal [[regularExpressionFirstChar, regularExpressionChars]]
 regularExpressionChars = many regularExpressionChar
-regularExpressionFirstChar = Nonterminal [[nonTerminator `butNot` (oneOf ["*", "\\", "/"])],
+regularExpressionFirstChar = Nonterminal [[nonTerminator `butNot` oneOf ["*", "\\", "/"]],
                                           [backslashSequence]]
-regularExpressionChar = Nonterminal [[nonTerminator `butNot` (oneOf ["\\", "/"])],
+regularExpressionChar = Nonterminal [[nonTerminator `butNot` oneOf ["\\", "/"]],
                                      [backslashSequence]]
 backslashSequence = Nonterminal [[Terminal "\\", nonTerminator]]
 
@@ -463,10 +463,10 @@ instance SymbolLike Char where
     toSymbol c = Terminal [c]
 
 --Take a Symbol and enumerate every expansion of it
-getAll s = map concat $ runOmega $ enumerate s
+getAll = map concat . runOmega . enumerate
 
 oneOf :: SymbolLike a => [a] -> Symbol
-oneOf ts = Nonterminal $ map (\f -> [toSymbol f]) ts
+oneOf = Nonterminal . map (\f -> [toSymbol f])
 
 many1 :: Symbol -> Symbol
 many1 s = n
