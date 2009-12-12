@@ -29,9 +29,11 @@ Installation should be as simple as
 Running
 -------
 
-    generatejs <number-of-programs-to-create
+    generatejs [--stdout] <number-of-programs-to-create>
 
-This will create a directory gen/ in your current directory.  This directory will in turn be filled with numbered subdirectories, each of which holds up to 20000 numbered js programs.  This is done to keep the filesystem from freaking out from too many files in any one directory.
+If you include `--stdout`, the programs are written to standard out, one to a line.
+
+Otherwise it will create a directory `gen/` in your current directory.  This directory will in turn be filled with numbered subdirectories, each of which holds up to 20000 numbered js programs.  This is done to keep the filesystem from freaking out from too many files in any one directory.
 
 
 Hacking
