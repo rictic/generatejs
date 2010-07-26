@@ -24,7 +24,7 @@ Installation
 
 Installation should be as simple as
 
-    cabal install
+    cabal update && cabal install
 
 Running
 -------
