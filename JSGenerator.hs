@@ -17,7 +17,6 @@ are safe in modern js engines.
 module JSGenerator 
   (program, getAll, enumerate)
   where
-import Prelude hiding (catch)
 import qualified Data.Set as Set
 import Control.Monad.Omega
 
@@ -416,11 +415,11 @@ labelledStatement = Nonterminal [[identifier, Terminal ":", statement]]
 throwStatement = Nonterminal [[Terminal " throw ", expression, Terminal ";"]]
 
 ----The try Statement
-tryStatement = Nonterminal [[Terminal " try ", block, catch],
+tryStatement = Nonterminal [[Terminal " try ", block, catch_],
                             [Terminal " try ", block, finally],
-                            [Terminal " try ", block, catch, finally]]
+                            [Terminal " try ", block, catch_, finally]]
 
-catch = Nonterminal [[Terminal " catch(", identifier, Terminal ")", block]]
+catch_ = Nonterminal [[Terminal " catch(", identifier, Terminal ")", block]]
 finally = Nonterminal [[Terminal " finally", block]]
 
 
