@@ -11,7 +11,7 @@ module Main
   where
 import JSGenerator (getAll, program)
 import System.Directory
-import System
+import System.Environment
 import Text.Printf
 
 
